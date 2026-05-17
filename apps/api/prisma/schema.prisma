@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MealSource {
+  MANUAL
+  BARCODE
+  APPLE_HEALTH
+}
+
+enum HealthSyncDirection {
+  EXPORT_TO_APPLE_HEALTH
+  IMPORT_FROM_APPLE_HEALTH
+}
+
+enum HealthSyncStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum HealthSampleType {
+  DIETARY_ENERGY
+  DIETARY_PROTEIN
+  DIETARY_CARBS
+  DIETARY_FAT
+  WORKOUT
+  BODY_WEIGHT
+  ACTIVE_ENERGY
+}
+
+model User {
+  id              String                  @id @default(cuid())
+  email           String?                 @unique
+  displayName     String?
+  timezone        String                  @default("America/New_York")
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  meals           MealEntry[]
+  workouts        WorkoutSession[]
+  recovery        RecoveryCheckIn[]
+  feedback        LiftFeedback[]
+  insights        CoachInsight[]
+  healthIntegration AppleHealthIntegration?
+  healthSyncEvents AppleHealthSyncEvent[]
+  healthSampleMaps AppleHealthSampleMap[]
+}
+
+model MealEntry {
+  id           String     @id @default(cuid())
+  userId       String
+  loggedAt     DateTime
+  name         String
+  calories     Float
+  protein      Float
+  carbs        Float
+  fat          Float
+  isPreWorkout Boolean    @default(false)
+  source       MealSource @default(MANUAL)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, loggedAt])
+}
+
+model WorkoutSession {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  exercise  String
+  sets      Int
+  reps      Int
+  weight    Float
+  rpe       Float
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model RecoveryCheckIn {
+  id         String   @id @default(cuid())
+  userId     String
+  date       DateTime
+  sleepHours Float
+  energy     Int
+  soreness   Int
+  stress     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model LiftFeedback {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime
+  exercise     String
+  feltStrength Int
+  jointPain    Int
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model CoachInsight {
+  id               String   @id @default(cuid())
+  userId           String
+  summary          String
+  drivers          String[]
+  recommendation   String
+  confidence       Float
+  performanceDelta Float?
+  carbsDelta       Float?
+  sleepDelta       Float?
+  contextSnapshot  Json?
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AppleHealthIntegration {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  connected   Boolean  @default(false)
+  permissions String[]
+  connectedAt DateTime?
+  lastSyncAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AppleHealthSyncEvent {
+  id         String              @id @default(cuid())
+  userId     String
+  direction  HealthSyncDirection
+  status     HealthSyncStatus
+  startedAt  DateTime?
+  finishedAt DateTime?
+  details    Json?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AppleHealthSampleMap {
+  id           String           @id @default(cuid())
+  userId       String
+  sampleUuid   String
+  sampleType   HealthSampleType
+  internalRef  String?
+  lastSyncedAt DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sampleUuid])
+  @@index([userId, sampleType])
+}

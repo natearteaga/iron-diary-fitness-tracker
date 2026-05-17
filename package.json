@@ -1,0 +1,21 @@
+{
+  "name": "iron-diary",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Iron Diary monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace @irondiary/api run dev",
+    "build:api": "npm --workspace @irondiary/api run build",
+    "start:api": "npm --workspace @irondiary/api run start",
+    "dev:mobile": "npm --workspace @irondiary/mobile run start",
+    "ios:mobile": "npm --workspace @irondiary/mobile run ios",
+    "android:mobile": "npm --workspace @irondiary/mobile run android",
+    "prisma:generate": "npm --workspace @irondiary/api run prisma:generate",
+    "prisma:migrate": "npm --workspace @irondiary/api run prisma:migrate",
+    "check:api": "npm --workspace @irondiary/api run check"
+  }
+}

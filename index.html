@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iron Diary</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">ID</span>
+          <div>
+            <p class="eyebrow">Performance Journal</p>
+            <h1>Iron Diary</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="load-demo" class="btn btn-muted" type="button">Load Reference Demo</button>
+          <button id="reset-data" class="btn btn-danger" type="button">Reset Data</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar card">
+          <button class="nav-btn active" data-screen="home">Home</button>
+          <button class="nav-btn" data-screen="nutrition">Meal Log</button>
+          <button class="nav-btn" data-screen="lifts">Lift Log</button>
+          <button class="nav-btn" data-screen="recovery">Recovery</button>
+          <button class="nav-btn" data-screen="coach">Iron Coach</button>
+          <div class="sidebar-tip">
+            <p>Today Focus</p>
+            <h3 id="focus-title">Keep pre-lift fuel consistent</h3>
+            <span id="focus-subtitle">Coach updates after each insight refresh.</span>
+          </div>
+        </aside>
+
+        <section class="content">
+          <section id="screen-home" class="screen active">
+            <div class="home-grid">
+              <article class="card summary-card">
+                <div class="ring-wrap">
+                  <div class="ring" id="calorie-ring">
+                    <span id="ring-percent">0%</span>
+                  </div>
+                  <div>
+                    <p class="label">Calories Remaining</p>
+                    <h2 id="calories-remaining">0</h2>
+                    <p id="calories-goal-note" class="muted">of 0 goal</p>
+                  </div>
+                </div>
+                <div class="macro-bars">
+                  <div>
+                    <p>Protein</p>
+                    <div class="bar"><span id="protein-bar"></span></div>
+                    <small id="protein-text">0 / 0 g</small>
+                  </div>
+                  <div>
+                    <p>Carbs</p>
+                    <div class="bar"><span id="carb-bar"></span></div>
+                    <small id="carb-text">0 / 0 g</small>
+                  </div>
+                  <div>
+                    <p>Fat</p>
+                    <div class="bar"><span id="fat-bar"></span></div>
+                    <small id="fat-text">0 / 0 g</small>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card quick-card">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                  <button data-go="nutrition">Add Meal</button>
+                  <button data-go="lifts">Start Lift Log</button>
+                  <button data-go="recovery">Recovery Check-In</button>
+                  <button data-go="coach">Review Coach</button>
+                </div>
+                <div class="stats-row">
+                  <div>
+                    <p>Weekly Volume</p>
+                    <h4 id="weekly-volume">0</h4>
+                    <small id="weekly-volume-note">No baseline yet</small>
+                  </div>
+                  <div>
+                    <p>Readiness</p>
+                    <h4 id="readiness-score">0</h4>
+                    <small id="readiness-note">Needs check-in</small>
+                  </div>
+                  <div>
+                    <p>Streak</p>
+                    <h4 id="training-streak">0d</h4>
+                    <small id="training-streak-note">No sessions this week</small>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card timeline-card">
+                <div class="section-head">
+                  <h3>Today Timeline</h3>
+                  <span id="today-count">0 entries</span>
+                </div>
+                <ul id="timeline-list" class="list"></ul>
+              </article>
+
+              <article class="card coach-preview">
+                <div class="section-head">
+                  <h3>Coach Snapshot</h3>
+                  <span id="coach-confidence">0% confidence</span>
+                </div>
+                <p id="home-insight-summary" class="muted">
+                  Add logs or load the demo for week-over-week explanations.
+                </p>
+                <ul id="home-driver-list" class="list compact"></ul>
+              </article>
+            </div>
+          </section>
+
+          <section id="screen-nutrition" class="screen">
+            <div class="nutrition-grid">
+              <article class="card">
+                <div class="section-head">
+                  <h3>Nutrition Diary</h3>
+                  <span id="nutrition-summary">0 kcal logged today</span>
+                </div>
+                <div id="meal-sections" class="meal-sections"></div>
+              </article>
+
+              <article class="card">
+                <h3>Add Food</h3>
+                <form id="meal-form" class="stack">
+                  <div class="inline">
+                    <label>
+                      Time
+                      <input type="datetime-local" name="loggedAt" required />
+                    </label>
+                    <label>
+                      Meal Slot
+                      <select name="slot">
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snack">Snack</option>
+                        <option value="preworkout">Pre-Workout</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    Food Name
+                    <input type="text" name="name" placeholder="Greek yogurt + berries" required />
+                  </label>
+                  <div class="inline">
+                    <label>Calories<input type="number" min="0" name="calories" required /></label>
+                    <label>Protein<input type="number" min="0" name="protein" required /></label>
+                    <label>Carbs<input type="number" min="0" name="carbs" required /></label>
+                    <label>Fat<input type="number" min="0" name="fat" required /></label>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Add to Diary</button>
+                </form>
+                <div class="food-library">
+                  <p>Quick Add (frequent foods)</p>
+                  <div id="food-catalog" class="chip-row"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="screen-lifts" class="screen">
+            <div class="lift-grid">
+              <article class="card">
+                <div class="section-head">
+                  <h3>Live Session</h3>
+                  <span id="session-status">No active workout</span>
+                </div>
+                <form id="session-form" class="stack">
+                  <div class="inline">
+                    <label>
+                      Date
+                      <input type="date" name="date" required />
+                    </label>
+                    <label>
+                      Session Name
+                      <input type="text" name="name" placeholder="Upper Strength A" required />
+                    </label>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Start / Update Session</button>
+                </form>
+                <form id="exercise-form" class="inline tight">
+                  <label>
+                    Add Exercise
+                    <input type="text" name="exercise" placeholder="Barbell Bench Press" required />
+                  </label>
+                  <button class="btn btn-muted" type="submit">Add</button>
+                </form>
+                <div id="exercise-board" class="exercise-board"></div>
+                <button id="finish-session" class="btn btn-primary full" type="button">
+                  Finish Session
+                </button>
+              </article>
+
+              <article class="card">
+                <div class="section-head">
+                  <h3>Recent Sessions</h3>
+                  <span id="recent-count">0 logged</span>
+                </div>
+                <ul id="session-history" class="list"></ul>
+              </article>
+            </div>
+          </section>
+
+          <section id="screen-recovery" class="screen">
+            <div class="recovery-grid">
+              <article class="card">
+                <h3>Daily Recovery</h3>
+                <form id="recovery-form" class="stack">
+                  <label>Date<input type="date" name="date" required /></label>
+                  <div class="inline">
+                    <label>Sleep (hours)<input type="number" min="0" max="24" step="0.1" name="sleepHours" required /></label>
+                    <label>Energy (1-10)<input type="number" min="1" max="10" name="energy" required /></label>
+                    <label>Soreness (1-10)<input type="number" min="1" max="10" name="soreness" required /></label>
+                    <label>Stress (1-10)<input type="number" min="1" max="10" name="stress" required /></label>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Save Recovery</button>
+                </form>
+                <ul id="recovery-list" class="list"></ul>
+              </article>
+
+              <article class="card">
+                <h3>Lift Feel Journal</h3>
+                <form id="feedback-form" class="stack">
+                  <label>Date<input type="date" name="date" required /></label>
+                  <label>Exercise<input type="text" name="exercise" placeholder="Front Squat" required /></label>
+                  <div class="inline">
+                    <label>Felt Strength (-2 to +2)<input type="number" min="-2" max="2" name="feltStrength" required /></label>
+                    <label>Joint Pain (0-10)<input type="number" min="0" max="10" name="jointPain" required /></label>
+                  </div>
+                  <label>Notes<textarea name="notes" rows="3" placeholder="Explosive but left knee felt tight on top sets."></textarea></label>
+                  <button class="btn btn-primary" type="submit">Save Feedback</button>
+                </form>
+                <ul id="feedback-list" class="list"></ul>
+              </article>
+            </div>
+          </section>
+
+          <section id="screen-coach" class="screen">
+            <div class="coach-grid">
+              <article class="card">
+                <div class="section-head">
+                  <h3>Iron Coach Insight</h3>
+                  <button id="generate-insight" class="btn btn-primary" type="button">Generate Insight</button>
+                </div>
+                <p id="insight-summary" class="lead">
+                  Log sessions and nutrition to generate a driver analysis.
+                </p>
+                <div class="signal-grid">
+                  <article>
+                    <p>Performance</p>
+                    <h4 id="insight-performance">n/a</h4>
+                  </article>
+                  <article>
+                    <p>Pre-Lift Carbs</p>
+                    <h4 id="insight-carb">n/a</h4>
+                  </article>
+                  <article>
+                    <p>Sleep Shift</p>
+                    <h4 id="insight-sleep">n/a</h4>
+                  </article>
+                </div>
+                <ul id="insight-drivers" class="list compact"></ul>
+                <p id="insight-recommendation" class="coach-rec"></p>
+              </article>
+
+              <article class="card">
+                <div class="section-head">
+                  <h3>Insight History</h3>
+                  <span id="insight-history-count">0 generated</span>
+                </div>
+                <ul id="insight-history" class="list"></ul>
+              </article>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <nav class="mobile-nav card">
+      <button class="nav-btn active" data-screen="home">Home</button>
+      <button class="nav-btn" data-screen="nutrition">Meals</button>
+      <button class="nav-btn" data-screen="lifts">Lifts</button>
+      <button class="nav-btn" data-screen="coach">Coach</button>
+    </nav>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
